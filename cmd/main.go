@@ -1,7 +1,7 @@
 package main
 
 import(
-"github.com/benmotyka/serverless-crud/pkg/handlers"
+"github.com/benmotyka/boring-serverless-crud/pkg/handlers"
 "os"
 "github.com/aws/aws-lambda-go/events"
 "github.com/aws/aws-lambda-go/lambda"
@@ -18,8 +18,8 @@ var(
 func main(){
 	region := os.Getenv("AWS_REGION")
 	awsSession, err := session.newSession(&aws.Config{
-		Region: aws.String(region)
-		}
+		Region: aws.String(region),
+		},
 	)
 	if err != nil {
 		return
