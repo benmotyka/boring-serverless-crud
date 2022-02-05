@@ -33,7 +33,7 @@ const tableName = 'BoringServerlessCrud'
 func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error){
 	switch req.HTTPMethod{
 	case "GET":
-			return handlers.GetUser(req, tableName, dynamoDbClient)
+		return handlers.GetUser(req, tableName, dynamoDbClient)
 	case "POST":
 		return handlers.CreateUser(req, tableName, dynamoDbClient)
 	case "PUT":

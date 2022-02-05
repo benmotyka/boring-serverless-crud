@@ -1,7 +1,7 @@
 package handlers
 
 import(
-	"encoding/json",
+	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 )
 
