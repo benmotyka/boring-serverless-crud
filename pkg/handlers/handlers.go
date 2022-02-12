@@ -33,6 +33,11 @@ func GetUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient
 }
 
 func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
+	result, err := user.CreateUser(req, tableName, dynamoDbClient)
+	if err != nil {
+		return apiResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+	return apiResponse(http.statusOK, result)
 }
 func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
 }
