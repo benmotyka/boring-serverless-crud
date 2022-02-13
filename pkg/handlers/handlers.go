@@ -40,8 +40,14 @@ func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbCli
 	return apiResponse(http.StatusOK, result)
 }
 
-// func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
-// }
+func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
+	result, err := user.UpdateUser(req, tableName, dynamoDbClient)
+	if err != nil {
+		return apiResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+	return apiResponse(http.StatusOK, result)
+}
+
 // func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
 // }
 
