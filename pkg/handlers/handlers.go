@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-	"github.com/benmotyka/serverless-crud/pkg/user"
+	"github.com/benmotyka/boring-serverless-crud/pkg/user"
 )
 
 var ErrorMethodNotAllowed = "method not allowed"
@@ -37,12 +37,13 @@ func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbCli
 	if err != nil {
 		return apiResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
 	}
-	return apiResponse(http.statusOK, result)
+	return apiResponse(http.StatusOK, result)
 }
-func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
-}
-func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
-}
+
+// func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
+// }
+// func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*events.APIGatewayProxyResponse, error) {
+// }
 
 func UnhandledMethod() (*events.APIGatewayProxyResponse, error) {
 	return apiResponse(http.StatusMethodNotAllowed, ErrorMethodNotAllowed)

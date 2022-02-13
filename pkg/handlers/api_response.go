@@ -1,17 +1,18 @@
 package handlers
 
-import(
+import (
 	"encoding/json"
+
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func apiResponse(status int, body interface{})(*events.APIGatewayProxyResponse, error){
-	response := events.APIGatewayProxyResponse{Headers: map[string]string["Content-Type": "application/json"]}
+func apiResponse(status int, body interface{}) (*events.APIGatewayProxyResponse, error) {
+	response := events.APIGatewayProxyResponse{Headers: map[string]string{"Content-Type": "application/json"}}
 
 	response.StatusCode = status
 
 	parsedBody, _ := json.Marshal(body)
 	response.Body = string(parsedBody)
-	
-	return &resp, nil
+
+	return &response, nil
 }

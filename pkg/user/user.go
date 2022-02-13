@@ -3,29 +3,32 @@ package user
 import (
 	"encoding/json"
 	"errors"
-	"github.com/benmotyka/boring-serverless-crud/pkg/validators"
+
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-)
-var (
-	ErrorFailedToGetRecord = "Failed to get record"
-	ErrorFailedToUnmarshalRecord = "Failed to unmarshal record"
-	ErrorInvalidUserData = "Invalid user data"
-	ErrorInvalidItem = "Invalid item"
-	ErrorItemExists = "Item exists"
-	ErrorCouldNotCreateItem = "Could not create item"
+	"github.com/benmotyka/boring-serverless-crud/pkg/validators"
 )
 
-type User struct{
+var (
+	ErrorFailedToGetRecord       = "Failed to get record"
+	ErrorFailedToUnmarshalRecord = "Failed to unmarshal record"
+	ErrorInvalidUserData         = "Invalid user data"
+	ErrorInvalidItem             = "Invalid item"
+	ErrorItemExists              = "Item exists"
+	ErrorCouldNotCreateItem      = "Could not create item"
+)
+
+type User struct {
 	Email string `json:"email`
-	Name string `json:"name"`
+	Name  string `json:"name"`
 }
 
 func GetUser(email, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*User, error) {
 	query := &dynamodb.GetItemInput{
-		Key: map[string] * dynamodb.AttributeValue{
+		Key: map[string]*dynamodb.AttributeValue{
 			"email": {
 				S: aws.String(email),
 			},
@@ -39,39 +42,38 @@ func GetUser(email, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) 
 		return nil, errors.New(ErrorFailedToGetRecord)
 	}
 
-	result := new(User)
-	err = dynamodbattribute.UnmarshalMap(result.Item, result)
-
+	item := new(User)
+	err = dynamodbattribute.UnmarshalMap(result.Item, item)
 
 	if err != nil {
 		return nil, errors.New(ErrorFailedToUnmarshalRecord)
 	}
 
-	return result, nil
+	return item, nil
 }
 
-func GetAllUsers(tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI)(*[]User, error) {
-query := &dynamodb.ScanInput{
-	TableName: aws.String(tableName)
+func GetAllUsers(tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*[]User, error) {
+	query := &dynamodb.ScanInput{
+		TableName: aws.String(tableName),
+	}
+
+	//scan = findall
+	result, err := dynamoDbClient.Scan(query)
+	if err != nil {
+		return nil, errors.New(ErrorFailedToGetRecord)
+	}
+
+	items := new([]User)
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, items)
+	return items, nil
+
 }
 
-//scan = findall
-result, err := dynamoDbClient.Scan(query)
-if err != nil {
-	return nil, errors.New(ErrorFailedToGetRecord)
-}
+func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*User, error) {
 
-result := new([]User)
-err = dynamodbattribute.UnmarshalMap(result.Items, result)
-return result, nil
+	var user User
 
-}
-
-func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbClient dynamodbiface.DynamoDBAPI) (*User, error){
-
-	var user User 
-
-	if err := json.Unmarshal([]byte(req.body), &user); err!=nil {
+	if err := json.Unmarshal([]byte(req.Body), &user); err != nil {
 		return nil, errors.New(ErrorInvalidUserData)
 	}
 
@@ -91,11 +93,11 @@ func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbCli
 	}
 
 	query := &dynamodb.PutItemInput{
-		Item: item,
-		TableName: aws.String(tableName)
+		Item:      item,
+		TableName: aws.String(tableName),
 	}
 
-	_, err = dynamoDbClient.PutItem(input)
+	_, err = dynamoDbClient.PutItem(query)
 
 	if err != nil {
 		return nil, errors.New(ErrorCouldNotCreateItem)
@@ -104,10 +106,10 @@ func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynamoDbCli
 	return &user, nil
 }
 
-func UpdateUser() {
+// func UpdateUser() {
 
-}
+// }
 
-func DeleteUser() error {
+// func DeleteUser() error {
 
-}
+// }
